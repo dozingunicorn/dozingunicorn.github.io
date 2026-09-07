@@ -26,3 +26,12 @@ LOGGING_PATH = /tmp/unicorn/sync-images
 
 ```
 
+### Various Helpers
+
+#### Disable .DS_Store on `_images` path
+
+Though ignore patterns have been added to tools, releasing `.DS_Store` files to a public S3 is not preferred
+
+```bash
+sudo cp -af /dev/null _images/.DS_Store && sudo chmod a=rw _images/.DS_Store
+```

@@ -7,6 +7,8 @@ sync-images: CLI tool for managing b2 image gallery for unicorn.github.io
 
 import os
 import pathlib
+import sys
+import time
 
 import b2sdk.v3 as b2sdk
 
@@ -49,10 +51,12 @@ common_bucket = click.option(
     "--bucket", "-b", envvar="B2_BUCKET", help="b2://my-bucket path"
 )
 common_application_key = click.option(
-    "--application-key", envvar="B2_APPLICATION_KEY", help="b2 application key"
+    "--application-key", envvar="_B2_APPLICATION_KEY", help="b2 application key"
 )
 common_application_key_id = click.option(
-    "--application-key-id", envvar="B2_APPLICATION_KEY_ID", help="b2 application key id"
+    "--application-key-id",
+    envvar="_B2_APPLICATION_KEY_ID",
+    help="b2 application key id",
 )
 
 common_bucket_path = click.option(
@@ -107,10 +111,28 @@ def pull(
 
     sync_settings = _toolbox.sync_enums(force, _toolbox.is_local_empty(source_path))
 
-    # empty = True
-    # if any(source_path.iterdir()):
-    #     logger.warning("-- Local path is not empty")
-    #     empty = False
+    b2_full_path = "/".join(x.rstrip("/") for x in [bucket, b2_path])
+    local_path_str = str(source_path.resolve())
+    logger.info(f"b2 sync {b2_full_path} {local_path_str}")
+
+    policies_manager = b2sdk.ScanPoliciesManager(exclude_all_symlinks=True)
+    sync = b2sdk.Synchronizer(
+        max_workers=10,
+        policies_manager=policies_manager,
+        dry_run=dry_run,
+        allow_empty_source=False,
+        compare_version_mode=sync_settings.CompareVersionMode,
+        newer_file_mode=sync_settings.NewerFileSyncMode,
+        keep_days_or_delete=sync_settings.KeepOrDeleteMode,
+    )
+
+    with b2sdk.SyncReport(sys.stdout, True) as reporter:
+        sync.sync_folders(
+            source_folder=b2sdk.parse_folder(b2_full_path, b2_api),
+            dest_folder=b2sdk.parse_folder(local_path_str, b2_api),
+            reporter=reporter,
+            now_millis=int(round(time.time() * 1000)),
+        )
 
 
 cli.add_command(pull)
