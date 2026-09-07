@@ -6,6 +6,7 @@ dependencies = [
     "b2sdk>=2.12.0",
     "click>=8.5.0",
     "click-loguru>=1.3.8",
+    "pillow>=12.3.0",
     "python-dotenv>=1.2.3",
 ]
 #[tool.setuptools]

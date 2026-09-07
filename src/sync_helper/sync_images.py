@@ -65,10 +65,10 @@ common_bucket_path = click.option(
     "--b2-path", "-p", envvar="B2_LATEST_PATH", default="latest", help="b2 bucket path"
 )
 
-common_source_path = click.option(
-    "--source-path",
+common_local_path = click.option(
+    "--local-path",
     "-s",
-    envvar="LOCAL_SOURCE_PATH",
+    envvar="LOCAL_PATH",
     default=pathlib.Path.cwd() / "_images",
     help="LOCAL path for sync operations",
     type=click.Path(),
@@ -99,7 +99,7 @@ def cli(verbose, quiet, logfile, profile_mem):
 @common_application_key
 @common_application_key_id
 @common_bucket_path
-@common_source_path
+@common_local_path
 @common_force
 def pull(
     verbose,
@@ -108,20 +108,20 @@ def pull(
     application_key,
     application_key_id,
     b2_path,
-    source_path,
+    local_path,
     force,
 ):
     """sync-images pull: pulls all images from `latest` in desired bucket"""
     logger.info("B2: Authorize Account")
     b2_api = _toolbox.authorize_b2(application_key_id, application_key)
 
-    logger.info(f"Checking local path: {source_path}")
-    source_path.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Checking local path: {local_path}")
+    local_path.mkdir(parents=True, exist_ok=True)
 
-    sync_settings = _toolbox.sync_enums(force, _toolbox.is_local_empty(source_path))
+    sync_settings = _toolbox.sync_enums(force, _toolbox.is_local_empty(local_path))
 
     b2_full_path = "/".join(x.rstrip("/") for x in [bucket, b2_path])
-    local_path_str = str(source_path.resolve())
+    local_path_str = str(local_path.resolve())
     logger.info(f"b2 sync {b2_full_path} {local_path_str}")
 
     policies_manager = b2sdk.ScanPoliciesManager(exclude_all_symlinks=True)
@@ -152,7 +152,7 @@ def pull(
 @common_application_key
 @common_application_key_id
 @common_bucket_path
-@common_source_path
+@common_local_path
 @common_backup_path
 @common_force
 def push(
@@ -162,12 +162,44 @@ def push(
     application_key,
     application_key_id,
     b2_path,
-    source_path,
+    local_path,
     backup_path,
     force,
 ):
     """sync-images push: `b2 copy` images to /latest and /backup/YYYY-MM-DD_HH:MM:SS"""
+    pass
 
+
+@click.command(context_settings=dict(show_default=True))
+@click_loguru.init_logger()
+@common_verbose
+@common_dryrun
+@common_force
+@common_local_path
+@click.option(
+    "--thumbsize",
+    envvar="THUMBSIZE",
+    help="Thumbnail size '\dX\d' pattern",
+    # TODO: click callback to validate regex
+    default="600x600",
+)
+@click.option(
+    "--thumbquality",
+    envvar="THUMBQUALITY",
+    help="Thumbnail quality percent",
+    default=95,
+    type=int,
+)
+def thumbnail(
+    verbose,
+    dry_run,
+    bucket,
+    force,
+    local_path,
+    thumbsize,
+    thumbquality,
+):
+    """sync-images thumbnail: generate automatic thumbnails of images in local_path"""
     pass
 
 
