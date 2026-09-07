@@ -70,7 +70,7 @@ def authorize_b2(
     application_key_id: str,
     application_key: str,
     realm: str = "production",
-    accountInfo: b2sdk.AbstractAccountInfo = b2sdk.InMemoryAccountInfo(),
+    account_info: b2sdk.AbstractAccountInfo = b2sdk.InMemoryAccountInfo(),
 ) -> b2sdk.B2Api:
     """Returns authorized b2 SDK object
 
@@ -81,12 +81,12 @@ def authorize_b2(
         application_key_id (str): b2 application key id (SECRET)
         application_key (str): b2 application key
         realm (str, optional): b2sdk.B2Api.authorize_account optional arg
-        accountInfo (b2sdk.AbstractAccountInfo, optional): https://b2-sdk-python.readthedocs.io/en/master/api/account_info.html#accountinfo
+        account_info (b2sdk.AbstractAccountInfo, optional): https://b2-sdk-python.readthedocs.io/en/master/api/account_info.html#accountinfo
 
     Returns:
         b2sdk.B2Api: authorized b2 SDK object
 
     """
-    b2_api = b2sdk.B2Api(accountInfo)
+    b2_api = b2sdk.B2Api(account_info)
     b2_api.authorize_account(application_key_id, application_key, realm=realm)
     return b2_api
