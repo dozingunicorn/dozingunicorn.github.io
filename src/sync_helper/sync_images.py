@@ -5,10 +5,12 @@ sync-images: CLI tool for managing b2 image gallery for unicorn.github.io
 
 """
 
+from datetime import datetime
 import os
 import pathlib
 import sys
 import time
+from email.policy import default
 
 import b2sdk.v3 as b2sdk
 
@@ -70,6 +72,13 @@ common_source_path = click.option(
     default=pathlib.Path.cwd() / "_images",
     help="LOCAL path for sync operations",
     type=click.Path(),
+)
+
+common_backup_path = click.option(
+    "--backup-path",
+    envvar="B2_BACKUP_PATH",
+    default=f"backup/{datetime.now().isoformat(timespec="minutes")}",
+    help="b2 backup path",
 )
 
 
@@ -135,6 +144,34 @@ def pull(
         )
 
 
+@click.command(context_settings=dict(show_default=True))
+@click_loguru.init_logger()
+@common_verbose
+@common_dryrun
+@common_bucket
+@common_application_key
+@common_application_key_id
+@common_bucket_path
+@common_source_path
+@common_backup_path
+@common_force
+def push(
+    verbose,
+    dry_run,
+    bucket,
+    application_key,
+    application_key_id,
+    b2_path,
+    source_path,
+    backup_path,
+    force,
+):
+    """sync-images push: `b2 copy` images to /latest and /backup/YYYY-MM-DD_HH:MM:SS"""
+
+    pass
+
+
+cli.add_command(push)
 cli.add_command(pull)
 
 
