@@ -1,0 +1,33 @@
+baseURL = 'https://example.org/'
+locale = 'en-us'
+theme = 'beautifulhugo'
+
+[params]
+  subtitle = "Build a beautiful and simple website in minutes"
+  mainSections = ["post", "posts"]
+  logo = "/img/avatar-icon.png"
+  favicon = "/img/favicon.ico"
+  dateFormat = "January 2, 2006"
+  colorScheme = "auto"
+  readingTime = true
+  socialShare = true
+  showRelatedPosts = true
+  rss = true
+
+  [params.search]
+    provider = "fuse"
+
+[params.author]
+  name = "Your Name"
+  website = "yourwebsite.com"
+  email = "youremail@domain.com"
+  github = "username"
+
+[markup.highlight]
+  noClasses = false
+
+[markup.goldmark.parser.attribute]
+  block = true
+
+[markup.goldmark.renderer]
+  unsafe = true
