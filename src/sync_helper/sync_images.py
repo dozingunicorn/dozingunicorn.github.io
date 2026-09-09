@@ -119,7 +119,7 @@ def pull(
 
     b2_full_path = "/".join(x.rstrip("/") for x in [bucket, b2_path])
     local_path_str = str(local_path.resolve())
-    logger.info(f"b2 sync {b2_full_path} {local_path_str}")
+    logger.info(f"b2 sync {b2_full_path} --> {local_path_str}")
 
     policies_manager = b2sdk.ScanPoliciesManager(exclude_all_symlinks=True)
     sync = b2sdk.Synchronizer(
@@ -187,7 +187,7 @@ def push(
                 x,
                 local_path,
             )
-            logger.debug(f"b2 copy {x.resolve()} {b2_fileInfo}")
+            logger.debug(f"b2 copy {x.resolve()} --> {b2_fileInfo}")
             if not dry_run:
                 b2_bucket.upload_local_file(
                     b2_fileInfo.local_path, b2_fileInfo.bucket_path
@@ -198,7 +198,7 @@ def push(
                 x,
                 local_path,
             )
-            logger.debug(f"b2 copy {x.resolve()} {b2_fileInfo_backup}")
+            logger.debug(f"b2 copy {x.resolve()} --> {b2_fileInfo_backup}")
             if not dry_run:
                 b2_bucket_backup.upload_local_file(
                     b2_fileInfo_backup.local_path, b2_fileInfo_backup.bucket_path
