@@ -1,6 +1,10 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://dozingunicorn.github.io/'
 locale = 'en-us'
 theme = 'beautifulhugo'
+
+# [services]
+#   [services.googleAnalytics]
+#     id = "G-xxxxxxxx"
 
 [params]
   subtitle = "Build a beautiful and simple website in minutes"

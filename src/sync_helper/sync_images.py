@@ -10,7 +10,7 @@ import os
 import pathlib
 import sys
 import time
-from email.policy import default
+import re
 
 import b2sdk.v3 as b2sdk
 
@@ -33,12 +33,11 @@ click_loguru = ClickLoguru(
     __version__,
     retention=0,
     log_dir_parent=__logging_path__,
+    stderr_log_level="INFO",
+    file_log_level="DEBUG",
 )
 
 ## Common args
-common_verbose = click.option(
-    "--verbose", "-v", is_flag=True, default=False, help="enable verbose logging"
-)
 common_dryrun = click.option(
     "--dry-run",
     "-n",
@@ -93,7 +92,6 @@ def cli(verbose, quiet, logfile, profile_mem):
 
 @click.command(context_settings=dict(show_default=True))
 @click_loguru.init_logger()
-@common_verbose
 @common_dryrun
 @common_bucket
 @common_application_key
@@ -102,7 +100,6 @@ def cli(verbose, quiet, logfile, profile_mem):
 @common_local_path
 @common_force
 def pull(
-    verbose,
     dry_run,
     bucket,
     application_key,
@@ -146,7 +143,6 @@ def pull(
 
 @click.command(context_settings=dict(show_default=True))
 @click_loguru.init_logger()
-@common_verbose
 @common_dryrun
 @common_bucket
 @common_application_key
@@ -156,7 +152,6 @@ def pull(
 @common_backup_path
 @common_force
 def push(
-    verbose,
     dry_run,
     bucket,
     application_key,
@@ -167,12 +162,51 @@ def push(
     force,
 ):
     """sync-images push: `b2 copy` images to /latest and /backup/YYYY-MM-DD_HH:MM:SS"""
-    pass
+    logger.info("B2: Authorize Account")
+    b2_api = _toolbox.authorize_b2(application_key_id, application_key)
+
+    logger.info("Generating file list for `b2 copy`")
+    files_to_push = _toolbox.list_files(local_path)
+
+    b2_bucketInfo = _toolbox.B2Bucket(
+        "/".join([bucket, b2_path])
+    )  # TODO: b2://{bucket}/{b2_path} needs helper or fix
+    b2_bucketInfo_backup = _toolbox.B2Bucket(
+        "/".join([bucket.rstrip("/"), backup_path])
+    )  # TODO: make backup bucket a full b2:// path
+    with click.progressbar(files_to_push, label=f"Pushing files to {bucket}") as bar:
+        logger.debug("")
+        if dry_run:
+            logger.warning("DRY RUN: Skipping b2 copy operations")
+        b2_bucket = b2_api.get_bucket_by_name(b2_bucketInfo.bucket_name)
+        b2_bucket_backup = b2_api.get_bucket_by_name(b2_bucketInfo_backup.bucket_name)
+        for x in bar:
+            # TODO: this should be a function
+            b2_fileInfo = _toolbox.B2Filepath(
+                b2_bucketInfo,
+                x,
+                local_path,
+            )
+            logger.debug(f"b2 copy {x.resolve()} {b2_fileInfo}")
+            if not dry_run:
+                b2_bucket.upload_local_file(
+                    b2_fileInfo.local_path, b2_fileInfo.bucket_path
+                )
+
+            b2_fileInfo_backup = _toolbox.B2Filepath(
+                b2_bucketInfo_backup,
+                x,
+                local_path,
+            )
+            logger.debug(f"b2 copy {x.resolve()} {b2_fileInfo_backup}")
+            if not dry_run:
+                b2_bucket_backup.upload_local_file(
+                    b2_fileInfo_backup.local_path, b2_fileInfo_backup.bucket_path
+                )
 
 
 @click.command(context_settings=dict(show_default=True))
 @click_loguru.init_logger()
-@common_verbose
 @common_dryrun
 @common_force
 @common_local_path
@@ -205,7 +239,7 @@ def thumbnail(
 
 cli.add_command(push)
 cli.add_command(pull)
-
+cli.add_command(thumbnail)
 
 if __name__ == "__main__":
     cli()

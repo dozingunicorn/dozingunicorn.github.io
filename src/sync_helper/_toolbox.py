@@ -6,7 +6,9 @@ sync-images toolbox: utilities for sync-images
 """
 
 from collections import namedtuple
+from dataclasses import dataclass, field
 import pathlib
+import re
 
 import b2sdk.v3 as b2sdk
 from click import pass_context
@@ -21,6 +23,52 @@ b2sdk_enums = namedtuple(
         "KeepOrDeleteMode",
     ],
 )
+
+syncFile = namedtuple("syncFile", ["full_pathlib", "b2_filepath"])
+
+
+@dataclass
+class B2Bucket:
+    b2_fullpath: str
+    bucket_name: str = field(init=False)
+    folder_path: str = field(init=False)
+
+    def __post_init__(self):
+        self.bucket_name = (
+            re.search(r"\/([a-zA-Z\-]+)", self.b2_fullpath).group(0).strip("/")
+        )
+        self.folder_path = self.b2_fullpath.split(self.bucket_name)[1].strip("/")
+
+
+@dataclass
+class B2Filepath:
+    b2_bucket: B2Bucket
+    full_filepath: pathlib.Path
+    common_rootpath: pathlib.Path
+    simple_filepath: str = field(init=False)
+    bucket_path: str = field(
+        init=False
+    )  # b2_bucket.bucket_path/(full_filepath - common_rootpath)
+    full_b2path: str = field(
+        init=False
+    )  # b2://bucket.bucket_name/bucket.bucket_path/pat
+    local_path: str = field(init=False)
+
+    def __post_init__(self):
+        self.simple_filepath = str(self.full_filepath.relative_to(self.common_rootpath))
+
+        path_elements = []
+        if self.b2_bucket.folder_path:
+            path_elements.append(self.b2_bucket.folder_path)
+        path_elements.append(self.simple_filepath)
+
+        self.bucket_path = "/".join(path_elements)
+        self.full_b2path = f"b2://{self.b2_bucket.bucket_name}/{self.bucket_path}"
+
+        self.local_path = str(self.full_filepath.resolve())
+
+    def __str__(self):
+        return self.full_b2path
 
 
 def is_local_empty(folder: pathlib.Path, ignored_files: dict | None = None) -> bool:
@@ -64,6 +112,27 @@ def sync_enums(is_force: bool, is_empty: bool) -> b2sdk_enums:
         b2sdk.CompareVersionMode.MODTIME,
         b2sdk.KeepOrDeleteMode.NO_DELETE,
     )
+
+
+def list_files(
+    head_path: pathlib.Path, ignored_files: dict | None = None
+) -> list[pathlib.Path]:
+    """returns a list of files in `head_path`, skips `ignore_files`, returns zip(pathlib.Path(full path), str(pathlib.Path().relative_to(head_path)))"""
+    if ignored_files is None:
+        ignored_files = {".DS_Store", ".bzEmpty", ".hedge-enabled"}
+
+    return_list = []
+    for x in head_path.rglob("*"):
+        # NOTE: return needs a len() for click.progressbar()
+        # generators do not support len()
+        if x.name in ignored_files:
+            continue
+        if x.is_dir():
+            continue
+
+        return_list.append(x)
+
+    return return_list
 
 
 def authorize_b2(
