@@ -11,8 +11,8 @@ import pathlib
 import re
 
 import b2sdk.v3 as b2sdk
-from click import pass_context
 from loguru import logger
+from PIL import Image
 
 b2sdk_enums = namedtuple(
     "b2sdk_enums",
@@ -71,6 +71,22 @@ class B2Filepath:
         return self.full_b2path
 
 
+def generate_thumbnail(
+    original_image: pathlib.Path,
+    file_suffix: str = "-thumb",
+    thumbnail_size: tuple[int, int] = (400, 400),
+    quality: int = 82,
+):
+    """generates thumbail and saves it at '{original_image.name}{file_suffix}.{original_image.suffix}'"""
+    thumb_path = (
+        original_image.parent
+        / f"{original_image.stem}{file_suffix}{original_image.suffix}"
+    )
+    with Image.open(original_image) as pil_image:
+        pil_image.thumbnail(thumbnail_size, Image.Resampling.LANCZOS)
+        pil_image.save(thumb_path, "jpeg", quality=quality)
+
+
 def is_local_empty(folder: pathlib.Path, ignored_files: dict | None = None) -> bool:
     if ignored_files is None:
         ignored_files = {".DS_Store"}
@@ -115,9 +131,24 @@ def sync_enums(is_force: bool, is_empty: bool) -> b2sdk_enums:
 
 
 def list_files(
-    head_path: pathlib.Path, ignored_files: dict | None = None
+    head_path: pathlib.Path,
+    skip_string: str | None = "",
+    required_ext: set | None = None,
+    ignored_files: set | None = None,
 ) -> list[pathlib.Path]:
-    """returns a list of files in `head_path`, skips `ignore_files`, returns zip(pathlib.Path(full path), str(pathlib.Path().relative_to(head_path)))"""
+    """returns a list of files in `head_path`, skips `ignore_files` or files without `required_ext`.  returns list of files
+
+    NOTE:
+        directory paths are skipped, only returns paths to files
+    Args:
+        head_path (pathlib.Path): top-of-directory to search
+        skip_string (str, optional): filename substring to skip
+        required_ext (set, Optional): file extensions to include
+        ignored_files (set, Optional): ignored files to skip
+
+    Returns:
+        list[pathlib.Path]: list of valid files in `head_path`
+    """
     if ignored_files is None:
         ignored_files = {".DS_Store", ".bzEmpty", ".hedge-enabled"}
 
@@ -128,6 +159,10 @@ def list_files(
         if x.name in ignored_files:
             continue
         if x.is_dir():
+            continue
+        if skip_string and skip_string in x.name:
+            continue
+        if required_ext and x.suffix not in required_ext:
             continue
 
         return_list.append(x)

@@ -4,6 +4,9 @@
 ## Files with secrets
 .b2env
 
+## Local dev files
+_images/
+
 ### Hugo ###
 # Generated files by hugo
 /public/

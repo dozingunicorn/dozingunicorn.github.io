@@ -216,30 +216,51 @@ def push(
 @common_force
 @common_local_path
 @click.option(
-    "--thumbsize",
-    envvar="THUMBSIZE",
+    "--size",
+    envvar="THUMB_SIZE",
     help="Thumbnail size '\dX\d' pattern",
     # TODO: click callback to validate regex
-    default="600x600",
+    default="400x400",
 )
 @click.option(
-    "--thumbquality",
-    envvar="THUMBQUALITY",
+    "--quality",
+    envvar="THUMB_QUALITY",
     help="Thumbnail quality percent",
-    default=95,
+    default=82,
     type=int,
 )
-def thumbnail(
-    verbose,
-    dry_run,
-    bucket,
-    force,
-    local_path,
-    thumbsize,
-    thumbquality,
-):
+@click.option(
+    "--suffix",
+    envvar="THUMB_SUFFIX",
+    help="Thumbnail suffix",
+    default="-thumb",
+    type=str,
+)
+def thumbnail(dry_run, force, local_path, quality, size, suffix):
     """sync-images thumbnail: generate automatic thumbnails of images in local_path"""
-    pass
+    logger.info("Fetching file list")
+    files_to_thumb = _toolbox.list_files(
+        local_path, skip_string=suffix, required_ext={".jpg", ".jpeg"}
+    )
+
+    width, height = re.split(r"x", size, flags=re.IGNORECASE)
+    logger.debug(f"width: {width}, height: {height}")
+
+    with click.progressbar(
+        files_to_thumb, label=f"Generating thumbnails for {local_path}"
+    ) as bar:
+        if dry_run:
+            logger.warning("DRY RUN: Skipping thumbnail creation")
+        for filepath in bar:
+            logger.debug(f"\n{filepath}")
+            if dry_run:
+                continue
+            _toolbox.generate_thumbnail(
+                filepath,
+                file_suffix=suffix,
+                thumbnail_size=(int(width), int(height)),
+                quality=quality,
+            )
 
 
 cli.add_command(push)
