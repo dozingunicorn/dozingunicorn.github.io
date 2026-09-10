@@ -4,8 +4,8 @@
 	{{- end -}}
 
 	{{- $src := "placeholder" -}}
-	{{- if .Get "dozsrc" -}}
-		{{- $src = printf "%s/%s/%s" ("https://files.dozingunicorn.com") (.Page.File.BaseFileName) (.Get "dozsrc") -}}
+	{{- if .Get "dzsrc" -}}
+		{{- $src = printf "%s/%s/%s" ("https://files.dozingunicorn.com") (.Page.File.BaseFileName) (.Get "dzsrc") -}}
 	{{- else -}}
 		{{- $u := urls.Parse (.Get "src") -}}
 		{{- $src = $u.String -}}

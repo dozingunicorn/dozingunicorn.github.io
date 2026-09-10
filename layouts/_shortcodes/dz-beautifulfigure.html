@@ -6,8 +6,15 @@ Based on hugo-easy-gallery by Li-Wen Yip: https://github.com/liwenyip/hugo-easy-
 {{- if not ($.Page.Store.Get "figurecount") }}<link rel="stylesheet" href="{{ "css/hugo-easy-gallery.css" | relURL }}" />{{ end }}
 {{- $.Page.Store.Set "figurecount" (add ($.Page.Store.Get "figurecount" | default 0) 1) -}}
 <!-- use either src or link-thumb for thumbnail image -->
-{{- $thumb := .Get "src" | default (printf "%s." (.Get "thumb") | replace (.Get "link") ".") }}
-{{- $src := .Get "link" | default (.Get "src") }}
+{{- $thumb := "placeholder" -}}
+{{- $src := "placeholder-thumb" -}}
+{{- if .Get "dzsrc" -}}
+  {{- $src = printf "https://files.dozingunicorn.com/%s/%s%s" (.Page.File.BaseFileName) (.Get "dzsrc") (.Get "dzext" | default (".jpg")) -}}
+  {{- $thumb = printf "https://files.dozingunicorn.com/%s/%s-thumb%s" (.Page.File.BaseFileName) (.Get "dzsrc") (.Get "dzext" | default (".jpg")) -}}
+{{- else -}}
+  {{- $thumb = .Get "src" | default (printf "%s." (.Get "thumb") | replace (.Get "link") ".") }}
+  {{- $src = .Get "link" | default (.Get "src") }}
+{{- end -}}
 {{- $size := .Get "size" }}
 {{- $pageRel := .Page.RelPermalink }}
 {{- if strings.HasPrefix $thumb "/" }}

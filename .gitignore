@@ -1,5 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/hugo,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=hugo,python
+.DS_Store
+uv.lock
+.idea/
 
 ## Files with secrets
 .b2env
