@@ -2,36 +2,38 @@ baseURL = 'https://dozingunicorn.github.io/'
 locale = 'en-us'
 theme = 'beautifulhugo'
 
+[security]
+enableInlineShortcodes = true
+
 # [services]
 #   [services.googleAnalytics]
 #     id = "G-xxxxxxxx"
 
 [params]
-  subtitle = "Build a beautiful and simple website in minutes"
-  mainSections = ["post", "posts"]
-  logo = "/img/avatar-icon.png"
-  favicon = "/img/favicon.ico"
-  dateFormat = "January 2, 2006"
-  colorScheme = "auto"
-  readingTime = true
-  socialShare = true
-  showRelatedPosts = true
-  rss = true
+subtitle = "Build a beautiful and simple website in minutes"
+mainSections = ["post", "posts"]
+logo = "/img/android-chrome-512x512.png"
+favicon = "/img/favicon.ico"
+dateFormat = "January 2, 2006"
+colorScheme = "auto"
+readingTime = true
+socialShare = true
+showRelatedPosts = true
+rss = true
+#disableFigureOverride = true
 
-  [params.search]
-    provider = "fuse"
+[params.search]
+provider = "fuse"
 
 [params.author]
-  name = "Your Name"
-  website = "yourwebsite.com"
-  email = "youremail@domain.com"
-  github = "username"
+name = "John Purcell"
+website = "dozingunicorn.com"
 
 [markup.highlight]
-  noClasses = false
+noClasses = false
 
 [markup.goldmark.parser.attribute]
-  block = true
+block = true
 
 [markup.goldmark.renderer]
-  unsafe = true
+unsafe = true

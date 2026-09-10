@@ -174,6 +174,10 @@ def push(
     b2_bucketInfo_backup = _toolbox.B2Bucket(
         "/".join([bucket.rstrip("/"), backup_path])
     )  # TODO: make backup bucket a full b2:// path
+
+    logger.info(f"b2 copy {local_path} --> {b2_bucketInfo.b2_fullpath}")
+    logger.info(f"b2 copy {local_path} --> {b2_bucketInfo_backup.b2_fullpath}")
+
     with click.progressbar(files_to_push, label=f"Pushing files to {bucket}") as bar:
         logger.debug("")
         if dry_run:
@@ -203,6 +207,7 @@ def push(
                 b2_bucket_backup.upload_local_file(
                     b2_fileInfo_backup.local_path, b2_fileInfo_backup.bucket_path
                 )
+    # TODO: stomp versions in b2://bucket-name/latest
 
 
 @click.command(context_settings=dict(show_default=True))
