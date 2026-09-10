@@ -10,14 +10,15 @@ enableInlineShortcodes = true
 #     id = "G-xxxxxxxx"
 
 [params]
-subtitle = "Build a beautiful and simple website in minutes"
+homeTitle = "DozingUnicorn"
+subtitle = "High Effort - Silly Subjects"
 mainSections = ["post", "posts"]
 logo = "/img/android-chrome-512x512.png"
 favicon = "/img/favicon.ico"
 dateFormat = "January 2, 2006"
 colorScheme = "auto"
 readingTime = true
-socialShare = true
+socialShare = false
 showRelatedPosts = true
 rss = true
 #disableFigureOverride = true
@@ -28,6 +29,9 @@ provider = "fuse"
 [params.author]
 name = "John Purcell"
 website = "dozingunicorn.com"
+instagram = "dozingunicorn"
+telegram = "DozingUnicorn"
+bluesky = "dozingunicorn.bsky.social" # BROKEN
 
 [markup.highlight]
 noClasses = false
