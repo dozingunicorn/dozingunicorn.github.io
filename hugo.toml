@@ -1,4 +1,4 @@
-baseURL = 'https://dozingunicorn.github.io/'
+baseURL = 'https://blog.dozingunicorn.com/'
 locale = 'en-us'
 theme = 'beautifulhugo'
 publishDir = 'docs'
