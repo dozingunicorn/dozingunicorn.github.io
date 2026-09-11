@@ -21,7 +21,11 @@ readingTime = true
 socialShare = false
 showRelatedPosts = true
 rss = true
+headerImgStyle = "big"
 #disableFigureOverride = true
+
+[pagination]
+pagerSize = 5
 
 [params.search]
 provider = "fuse"
