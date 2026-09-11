@@ -1,6 +1,7 @@
 baseURL = 'https://dozingunicorn.github.io/'
 locale = 'en-us'
 theme = 'beautifulhugo'
+publishDir = 'docs'
 
 [security]
 enableInlineShortcodes = true
