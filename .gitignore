@@ -3,6 +3,7 @@
 .DS_Store
 uv.lock
 .idea/
+docs/
 
 ## Files with secrets
 .b2env
