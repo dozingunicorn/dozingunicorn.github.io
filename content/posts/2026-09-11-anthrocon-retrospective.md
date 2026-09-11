@@ -3,11 +3,15 @@ date = '2026-09-10T15:31:14-07:00'
 draft = false
 title = 'Anthrocon 2026 - Retrospective'
 bigimg = [{ src = "https://files.dozingunicorn.com/2026-09-11-anthrocon-retrospective/anthrocon-banner-03.jpg", desc = "Anthrocon" }]
+image = "https://files.dozingunicorn.com/2026-09-11-anthrocon-retrospective/anthrocon-05-thumb.jpg"
+summary = "A short photo essay about Anthrocon 2026.  How it feels to visit the world's largest Furry convention."
 +++
 
 Furry conventions happen nearly every weekend these days, but the truly large events
-like [Furry Weekend Atlanta](),  [Midwest FurFest](), and [Anthrocon]() stand alone. With Anthrocon reaching beyond
-20,000 in attendance, there is something magic about The World's Largest Furry Convention.
+like [Furry Weekend Atlanta](https://furryweekend.com/),  [Midwest FurFest](https://www.furfest.org/),
+and [Anthrocon](https://www.anthrocon.org/)
+stand alone. With Anthrocon reaching beyond 20,000 in attendance, there is something magic about The World's Largest
+Furry Convention.
 
 I am often asked by well-meaning normies to explain the Fandom. And though nerd culture has rocketed into the
 mainstream, and Queer culture has gained wide acceptance, it's still difficult to give outsiders a whole picture.
